@@ -42,6 +42,7 @@ export default function BehaviourAnalysisHub() {
     }
 
     window.speechSynthesis.cancel();
+    window.speechSynthesis.resume();
     const cleanText = text
       .replace(/[*#_`~-]/g, "")
       .replace(/\[.*?\]\(.*?\)/g, "");
