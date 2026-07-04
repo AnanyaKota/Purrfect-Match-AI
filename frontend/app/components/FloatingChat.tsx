@@ -108,6 +108,7 @@ export default function FloatingChat() {
     }
 
     window.speechSynthesis.cancel();
+    window.speechSynthesis.resume();
 
     // Strip markdown formatting from the text so it sounds natural
     const cleanText = text
