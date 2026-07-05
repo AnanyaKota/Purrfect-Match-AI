@@ -6,6 +6,10 @@ from sqlalchemy.orm import sessionmaker
 # Retrieve database URL from environment, defaulting to local SQLite for sandbox execution
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./purrfect_match.db")
 
+print("=" * 80)
+print("DATABASE_URL =", DATABASE_URL)
+print("=" * 80)
+
 # Adjust SQLite URL for SQLAlchemy compatibility
 if DATABASE_URL.startswith("sqlite"):
     connect_args = {"check_same_thread": False}
