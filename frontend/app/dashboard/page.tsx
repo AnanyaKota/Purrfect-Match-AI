@@ -162,7 +162,11 @@ export default function AdopterDashboard() {
 
     setSpeakingMsgIdx(idx);
     setIsSpeechPaused(false);
-    window.speechSynthesis.speak(utterance);
+    setTimeout(() => {
+      if (utteranceRef.current === utterance) {
+        window.speechSynthesis.speak(utterance);
+      }
+    }, 60);
   };
 
   const handleStopSpeech = () => {
