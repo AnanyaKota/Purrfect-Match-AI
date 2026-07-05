@@ -21,6 +21,13 @@ export default function CameraCaptureModal({ isOpen, onClose, onCapture }: Camer
     setLoading(true);
     setError(null);
 
+    // Guard against unsupported mediaDevices or non-secure contexts
+    if (typeof window === "undefined" || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setError("Camera access is not supported by this browser context or requires a secure HTTPS connection.");
+      setLoading(false);
+      return;
+    }
+
     // Request camera permission and start video stream
     navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
       .catch((err) => {
@@ -34,9 +41,9 @@ export default function CameraCaptureModal({ isOpen, onClose, onCapture }: Camer
         }
         setLoading(false);
       })
-      .catch((err) => {
+      .catch((err: any) => {
         console.error("Camera access error:", err);
-        setError("Could not access your camera. Please check browser permissions.");
+        setError(`Camera access error: ${err.name || "Error"} - ${err.message || "Unknown error details"}.`);
         setLoading(false);
       });
 
