@@ -44,7 +44,7 @@ def signup(user_data: UserCreate, background_tasks: BackgroundTasks, db: Session
             password_hash=hashed_pwd,
             verification_token=verification_token,
             verification_token_expires=verification_token_expires,
-            email_verified=False  # Email not verified until verification link clicked
+            email_verified=True  # Auto-verify on signup for hackathon convenience
         )
         
         logger.info(f"[AUTH] Creating new user in database: {user_data.email}")
