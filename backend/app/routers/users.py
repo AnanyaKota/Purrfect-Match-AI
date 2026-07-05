@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Form, File, UploadFile
 from sqlalchemy.orm import Session
-from backend.app.database.connection import get_db
-from backend.app.models.models import User, Cat, PersonalityProfile
-from backend.app.routers.auth import get_current_user
-from backend.app.schemas.schemas import UserProfileUpdate, PetStatusUpdate, PetTransfer
+from app.database.connection import get_db
+from app.models.models import User, Cat, PersonalityProfile
+from app.routers.auth import get_current_user
+from app.schemas.schemas import UserProfileUpdate, PetStatusUpdate, PetTransfer
 from typing import List
 import shutil
 import uuid

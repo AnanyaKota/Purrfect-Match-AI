@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Form, BackgroundTasks
 from sqlalchemy.orm import Session, joinedload
-from backend.app.database.connection import get_db
-from backend.app.models.models import User, Cat, AdoptionRequest, Questionnaire, BehaviourLog
-from backend.app.schemas.schemas import AdoptionResponse, AdoptionCreate, DashboardResponse
-from backend.app.routers.auth import get_current_user
-from backend.app.services.email_service import EmailService
+from app.database.connection import get_db
+from app.models.models import User, Cat, AdoptionRequest, Questionnaire, BehaviourLog
+from app.schemas.schemas import AdoptionResponse, AdoptionCreate, DashboardResponse
+from app.routers.auth import get_current_user
+from app.services.email_service import EmailService
 from typing import List, Optional
 
 router = APIRouter(tags=["Adoption & Dashboard"])

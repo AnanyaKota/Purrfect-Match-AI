@@ -6,9 +6,9 @@ from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File,
 from pydantic import BaseModel
 from typing import Optional
 from sqlalchemy.orm import Session
-from backend.app.database.connection import get_db
-from backend.app.models.models import User, Cat, PersonalityProfile
-from backend.app.services.ai_pipeline import AIPipelineService
+from app.database.connection import get_db
+from app.models.models import User, Cat, PersonalityProfile
+from app.services.ai_pipeline import AIPipelineService
 import logging
 
 logger = logging.getLogger("purrfect_match_ai")

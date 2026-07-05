@@ -4,11 +4,11 @@ import tempfile
 import uuid
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Form
 from sqlalchemy.orm import Session
-from backend.app.database.connection import get_db
-from backend.app.models.models import User, Cat, PersonalityProfile, BehaviourLog
-from backend.app.schemas.schemas import BehaviourLogResponse
-from backend.app.routers.auth import get_current_user
-from backend.app.services.ai_pipeline import AIPipelineService
+from app.database.connection import get_db
+from app.models.models import User, Cat, PersonalityProfile, BehaviourLog
+from app.schemas.schemas import BehaviourLogResponse
+from app.routers.auth import get_current_user
+from app.services.ai_pipeline import AIPipelineService
 from typing import Optional, List
 
 router = APIRouter(tags=["AI Behaviour Intelligence"])

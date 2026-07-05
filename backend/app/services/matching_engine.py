@@ -1,5 +1,5 @@
 from typing import Dict, Any, List, Tuple
-from backend.app.models.models import PersonalityProfile, Questionnaire, Cat
+from app.models.models import PersonalityProfile, Questionnaire, Cat
 
 class MatchingEngineService:
     @staticmethod

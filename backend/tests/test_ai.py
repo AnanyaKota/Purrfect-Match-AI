@@ -5,7 +5,7 @@ import numpy as np
 # Add project root to sys.path so we can import modules
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
-from backend.app.services.ai_pipeline import AIPipelineService
+from app.services.ai_pipeline import AIPipelineService
 
 def test_ai_pipeline():
     service = AIPipelineService()

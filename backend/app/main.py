@@ -6,9 +6,9 @@ import logging
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from backend.app.database.connection import engine, Base
-from backend.app.database.seed import seed_db
-from backend.app.routers import auth, cats, matching, behaviour, adoption, users, ai_chat
+from app.database.connection import engine, Base
+from app.database.seed import seed_db
+from app.routers import auth, cats, matching, behaviour, adoption, users, ai_chat
 
 # Setup logging with enhanced configuration
 log_level = os.getenv("LOG_LEVEL", "DEBUG" if os.getenv("DEBUG", "true").lower() == "true" else "INFO")

@@ -4,8 +4,8 @@ import os
 # Add project root to sys.path so we can import modules
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
-from backend.app.models.models import Cat, PersonalityProfile, Questionnaire
-from backend.app.services.matching_engine import MatchingEngineService
+from app.models.models import Cat, PersonalityProfile, Questionnaire
+from app.services.matching_engine import MatchingEngineService
 
 def test_matching_algorithm():
     # 1. Mock Cats

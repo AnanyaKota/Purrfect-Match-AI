@@ -5,8 +5,8 @@ from sqlalchemy.orm import Session
 # Add project root to sys.path so we can import modules
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../")))
 
-from backend.app.database.connection import engine, Base, SessionLocal
-from backend.app.models.models import User, Cat, PersonalityProfile, Questionnaire
+from app.database.connection import engine, Base, SessionLocal
+from app.models.models import User, Cat, PersonalityProfile, Questionnaire
 
 def seed_db():
     # Create tables

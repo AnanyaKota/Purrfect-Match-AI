@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session, joinedload
-from backend.app.database.connection import get_db
-from backend.app.models.models import Questionnaire, User, Cat, Match, PersonalityProfile
-from backend.app.schemas.schemas import QuestionnaireCreate, QuestionnaireResponse, MatchResponse
-from backend.app.routers.auth import get_current_user
-from backend.app.services.matching_engine import MatchingEngineService
+from app.database.connection import get_db
+from app.models.models import Questionnaire, User, Cat, Match, PersonalityProfile
+from app.schemas.schemas import QuestionnaireCreate, QuestionnaireResponse, MatchResponse
+from app.routers.auth import get_current_user
+from app.services.matching_engine import MatchingEngineService
 from typing import List
 
 router = APIRouter(tags=["Matching Engine"])

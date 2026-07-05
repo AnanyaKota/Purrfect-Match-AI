@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Query, Form, File, UploadFile
 from sqlalchemy.orm import Session, joinedload
-from backend.app.database.connection import get_db
-from backend.app.models.models import Cat, PersonalityProfile, User, Questionnaire, Match
-from backend.app.schemas.schemas import CatResponse
-from backend.app.routers.auth import get_current_user
-from backend.app.services.matching_engine import MatchingEngineService
+from app.database.connection import get_db
+from app.models.models import Cat, PersonalityProfile, User, Questionnaire, Match
+from app.schemas.schemas import CatResponse
+from app.routers.auth import get_current_user
+from app.services.matching_engine import MatchingEngineService
 from typing import List, Optional
 import shutil
 import uuid

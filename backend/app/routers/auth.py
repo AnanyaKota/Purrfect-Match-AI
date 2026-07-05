@@ -1,11 +1,11 @@
 import os
 from fastapi import APIRouter, Depends, HTTPException, status, Header, BackgroundTasks
 from sqlalchemy.orm import Session
-from backend.app.database.connection import get_db
-from backend.app.models.models import User
-from backend.app.schemas.schemas import UserResponse, UserCreate, UserLogin, ForgotPasswordRequest, ResetPasswordRequest
-from backend.app.services.auth_utils import hash_password, verify_password, create_access_token, decode_access_token
-from backend.app.services.email_service import EmailService
+from app.database.connection import get_db
+from app.models.models import User
+from app.schemas.schemas import UserResponse, UserCreate, UserLogin, ForgotPasswordRequest, ResetPasswordRequest
+from app.services.auth_utils import hash_password, verify_password, create_access_token, decode_access_token
+from app.services.email_service import EmailService
 from typing import Optional
 import logging
 import datetime
