@@ -21,6 +21,7 @@ export default function AdopterDashboard() {
   const [isCareCameraOpen, setIsCareCameraOpen] = useState(false);
   const [voiceTranscript, setVoiceTranscript] = useState("");
   const [speakingMsgIdx, setSpeakingMsgIdx] = useState<number | null>(null);
+  const [isSpeechPaused, setIsSpeechPaused] = useState(false);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
   // Stop speech synthesis on unmount
@@ -121,8 +122,13 @@ export default function AdopterDashboard() {
     if (typeof window === "undefined" || !window.speechSynthesis) return;
 
     if (speakingMsgIdx === idx) {
-      window.speechSynthesis.cancel();
-      setSpeakingMsgIdx(null);
+      if (isSpeechPaused) {
+        window.speechSynthesis.resume();
+        setIsSpeechPaused(false);
+      } else {
+        window.speechSynthesis.pause();
+        setIsSpeechPaused(true);
+      }
       return;
     }
 
@@ -140,27 +146,32 @@ export default function AdopterDashboard() {
     utterance.onend = () => {
       if (utteranceRef.current === utterance) {
         setSpeakingMsgIdx(null);
+        setIsSpeechPaused(false);
       }
     };
 
     utterance.onerror = (event) => {
       if (event.error !== "interrupted") {
-        console.error("SpeechSynthesis error:", event);
+        console.warn("SpeechSynthesis error:", event);
       }
       if (utteranceRef.current === utterance) {
         setSpeakingMsgIdx(null);
+        setIsSpeechPaused(false);
       }
     };
 
     setSpeakingMsgIdx(idx);
+    setIsSpeechPaused(false);
     window.speechSynthesis.speak(utterance);
   };
 
   const handleStopSpeech = () => {
     if (typeof window !== "undefined" && window.speechSynthesis) {
+      window.speechSynthesis.resume();
       window.speechSynthesis.cancel();
     }
     setSpeakingMsgIdx(null);
+    setIsSpeechPaused(false);
   };
 
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
@@ -629,24 +640,45 @@ export default function AdopterDashboard() {
                     </button>
 
                      {msg.sender === "ai" && (
-                      <button
-                        type="button"
-                        onClick={() => handleSpeak(msg.text, idx)}
-                        className="flex items-center gap-1 hover:text-white transition-colors cursor-pointer"
-                        title={speakingMsgIdx === idx ? "Mute speech" : "Speak advice"}
-                      >
-                        {speakingMsgIdx === idx ? (
-                          <>
-                            <VolumeX className="h-3 w-3 text-red-400 animate-pulse" />
-                            <span className="text-red-400">Mute</span>
-                          </>
-                        ) : (
-                          <>
-                            <Volume2 className="h-3 w-3" />
-                            <span>Speak</span>
-                          </>
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => handleSpeak(msg.text, idx)}
+                          className="flex items-center gap-1 hover:text-white transition-colors cursor-pointer"
+                          title={speakingMsgIdx === idx ? (isSpeechPaused ? "Resume" : "Pause") : "Speak"}
+                        >
+                          {speakingMsgIdx === idx ? (
+                            isSpeechPaused ? (
+                              <>
+                                <Play className="h-3 w-3 text-emerald-400" />
+                                <span className="text-emerald-400">Resume</span>
+                              </>
+                            ) : (
+                              <>
+                                <Pause className="h-3 w-3 text-red-400 animate-pulse" />
+                                <span className="text-red-400">Pause</span>
+                              </>
+                            )
+                          ) : (
+                            <>
+                              <Volume2 className="h-3 w-3" />
+                              <span>Speak</span>
+                            </>
+                          )}
+                        </button>
+
+                        {speakingMsgIdx === idx && (
+                          <button
+                            type="button"
+                            onClick={handleStopSpeech}
+                            className="flex items-center gap-1 text-red-500 hover:text-red-400 transition-colors cursor-pointer"
+                            title="Stop speech"
+                          >
+                            <VolumeX className="h-3 w-3" />
+                            <span>Stop</span>
+                          </button>
                         )}
-                      </button>
+                      </>
                     )}
 
                     <button
