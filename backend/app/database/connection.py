@@ -4,10 +4,10 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 # Retrieve database URL from environment, defaulting to local SQLite for sandbox execution
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./purrfect_match.db")
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./purrfect_match.db").strip()
 
 print("=" * 80)
-print("DATABASE_URL =", DATABASE_URL)
+print("DATABASE_URL =", repr(DATABASE_URL))
 print("=" * 80)
 
 # Adjust SQLite URL for SQLAlchemy compatibility
