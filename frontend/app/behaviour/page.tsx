@@ -16,7 +16,6 @@ export default function BehaviourAnalysisHub() {
   const [currentStep, setCurrentStep] = useState(0);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [isSpeechPaused, setIsSpeechPaused] = useState(false);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
   // Stop speech synthesis on unmount
@@ -32,13 +31,8 @@ export default function BehaviourAnalysisHub() {
     if (typeof window === "undefined" || !window.speechSynthesis) return;
 
     if (isSpeaking) {
-      if (isSpeechPaused) {
-        window.speechSynthesis.resume();
-        setIsSpeechPaused(false);
-      } else {
-        window.speechSynthesis.pause();
-        setIsSpeechPaused(true);
-      }
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
       return;
     }
 
@@ -53,26 +47,21 @@ export default function BehaviourAnalysisHub() {
 
     utterance.onend = () => {
       setIsSpeaking(false);
-      setIsSpeechPaused(false);
     };
 
     utterance.onerror = () => {
       setIsSpeaking(false);
-      setIsSpeechPaused(false);
     };
 
     setIsSpeaking(true);
-    setIsSpeechPaused(false);
     window.speechSynthesis.speak(utterance);
   };
 
   const handleStopSpeech = () => {
     if (typeof window !== "undefined" && window.speechSynthesis) {
-      window.speechSynthesis.resume();
       window.speechSynthesis.cancel();
     }
     setIsSpeaking(false);
-    setIsSpeechPaused(false);
   };
 
   const scanningSteps = [
@@ -282,20 +271,13 @@ export default function BehaviourAnalysisHub() {
                       type="button"
                       onClick={() => handleSpeak(`I detected a ${analysisResult.mood} mood. The inferred behavior is ${analysisResult.detected_behaviour}. ${analysisResult.analysis}`)}
                       className="flex items-center gap-1 hover:text-white transition-colors cursor-pointer"
-                      title={isSpeaking ? (isSpeechPaused ? "Resume" : "Pause") : "Speak"}
+                      title={isSpeaking ? "Mute" : "Listen"}
                     >
                       {isSpeaking ? (
-                        isSpeechPaused ? (
-                          <>
-                            <Play className="h-4 w-4 text-emerald-400" />
-                            <span className="text-xs text-emerald-400">Resume</span>
-                          </>
-                        ) : (
-                          <>
-                            <Pause className="h-4 w-4 text-red-400 animate-pulse" />
-                            <span className="text-xs text-red-400">Pause</span>
-                          </>
-                        )
+                        <>
+                          <VolumeX className="h-4 w-4 text-red-400 animate-pulse" />
+                          <span className="text-xs text-red-400">Mute</span>
+                        </>
                       ) : (
                         <>
                           <Volume2 className="h-4 w-4 text-neutral-400 hover:text-white" />
@@ -303,17 +285,6 @@ export default function BehaviourAnalysisHub() {
                         </>
                       )}
                     </button>
-                    {isSpeaking && (
-                      <button
-                        type="button"
-                        onClick={handleStopSpeech}
-                        className="flex items-center gap-1 text-red-500 hover:text-red-400 transition-colors cursor-pointer"
-                        title="Stop speech"
-                      >
-                        <VolumeX className="h-4 w-4" />
-                        <span className="text-xs">Stop</span>
-                      </button>
-                    )}
                     <span className="px-2.5 py-0.5 rounded bg-red-950/40 border border-red-900/40 text-[10px] font-bold text-red-400 uppercase font-mono">
                       {analysisResult.mood}
                     </span>
