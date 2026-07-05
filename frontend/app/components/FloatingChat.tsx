@@ -781,9 +781,17 @@ export default function FloatingChat() {
           if (isOpen && isMinimized) {
             setIsMinimized(false);
           } else {
-            setIsOpen(!isOpen);
+            const nextOpen = !isOpen;
+            setIsOpen(nextOpen);
             setIsMinimized(false);
             setIsMaximized(false);
+            if (nextOpen) {
+              try {
+                const audio = new Audio("https://assets.mixkit.co/active_storage/sfx/87/87-preview.mp3");
+                audio.volume = 0.25;
+                audio.play().catch(() => {});
+              } catch (e) {}
+            }
           }
           setShowPrompt(false);
         }}
