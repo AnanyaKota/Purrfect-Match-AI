@@ -66,9 +66,9 @@ We will host the FastAPI app on **Render** (free tier) or **Railway** ($5 credit
 2. Click **New +** $\rightarrow$ **Web Service**.
 3. Connect your `Purrfect-Match-AI` GitHub repository.
 4. Configure the build parameters:
-   * **Root Directory**: `backend` (if you are deploying the backend sub-folder)
+   * **Root Directory**: Leave blank (root `/` of the repository)
    * **Runtime**: `Python`
-   * **Build Command**: `pip install -r requirements.txt`
+   * **Build Command**: `pip install -r backend/requirements.txt`
    * **Start Command**: `uvicorn backend.app.main:app --host 0.0.0.0 --port $PORT`
 5. Click **Advanced** and add the following **Environment Variables**:
    * `DATABASE_URL`: *Your Supabase PostgreSQL connection URI*
