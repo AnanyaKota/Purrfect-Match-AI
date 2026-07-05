@@ -67,6 +67,7 @@ export default function BehaviourAnalysisHub() {
 
   const handleStopSpeech = () => {
     if (typeof window !== "undefined" && window.speechSynthesis) {
+      window.speechSynthesis.resume();
       window.speechSynthesis.cancel();
     }
     setIsSpeaking(false);

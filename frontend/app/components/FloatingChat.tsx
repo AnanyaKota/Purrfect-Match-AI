@@ -135,6 +135,7 @@ export default function FloatingChat() {
 
   const handleStopSpeech = () => {
     if (typeof window !== "undefined" && window.speechSynthesis) {
+      window.speechSynthesis.resume();
       window.speechSynthesis.cancel();
     }
     setSpeakingMsgIdx(null);
