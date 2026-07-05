@@ -29,6 +29,8 @@ export default function CompatibilityQuestionnaire() {
       utterance.pitch = 1.6; 
       utterance.rate = 1.15;
       
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.resume();
       window.speechSynthesis.speak(utterance);
       setHasSpoken(true);
     };

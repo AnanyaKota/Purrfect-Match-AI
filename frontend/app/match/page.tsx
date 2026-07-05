@@ -36,6 +36,8 @@ export default function MatchResults() {
       
       // Slight delay to ensure UI is visible before speaking
       setTimeout(() => {
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.resume();
         window.speechSynthesis.speak(utterance);
       }, 300);
       setHasSpoken(true);
