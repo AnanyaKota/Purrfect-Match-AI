@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Sparkles, Cat, X, Send, Paperclip, Camera, Minus, Maximize2, Minimize2, Copy, Check, Share2, Mic, MicOff, Volume2, VolumeX, Play, Pause } from "lucide-react";
+import { Menu, Plus, Trash2, Sparkles, Cat, X, Send, Paperclip, Camera, Minus, Maximize2, Minimize2, Copy, Check, Share2, Mic, MicOff, Volume2, VolumeX, Play, Pause } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { sendChatQuery } from "@/lib/api";
 import CameraCaptureModal from "./CameraCaptureModal";
@@ -16,7 +16,11 @@ export default function FloatingChat() {
   const [chatCatId, setChatCatId] = useState("");
   const [chatInput, setChatInput] = useState("");
   const [chatFile, setChatFile] = useState<File | null>(null);
-  const [chatMessages, setChatMessages] = useState<any[]>([]);
+  
+  const [sessions, setSessions] = useState<any[]>([]);
+  const [activeSessionId, setActiveSessionId] = useState<string>("");
+  const [showHistoryMenu, setShowHistoryMenu] = useState(false);
+
   const [chatLoading, setChatLoading] = useState(false);
   const [showPrompt, setShowPrompt] = useState(true);
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
@@ -30,29 +34,41 @@ export default function FloatingChat() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
 
-  const getInitialMessages = (username: string) => {
-    const defaultMsg = {
-      sender: "ai",
-      text: `Hello${username !== "guest" ? " " + username : ""}! I am your Kizuna AI Behavior Advisor. Ask me anything about general cat behavior, play schedules, or shyness traits!`
-    };
-
+  const getInitialSessions = (username: string) => {
     if (typeof window !== "undefined") {
-      const stored = localStorage.getItem(`chat_history_${username}`);
+      const stored = localStorage.getItem(`chat_sessions_${username}`);
       if (stored) {
         try {
-          return JSON.parse(stored);
+          const parsed = JSON.parse(stored);
+          if (parsed && parsed.length > 0) {
+            return parsed;
+          }
         } catch (e) {
-          console.error("Failed to parse chat history", e);
+          console.error("Failed to parse chat sessions", e);
         }
       }
     }
-    return [defaultMsg];
+    const defaultSessionId = "session_" + Date.now();
+    return [
+      {
+        id: defaultSessionId,
+        title: "Default Conversation",
+        messages: [
+          {
+            sender: "ai",
+            text: `Hello${username !== "guest" ? " " + username : ""}! I am your Kizuna AI Behavior Advisor. Ask me anything about general cat behavior, play schedules, or shyness traits!`
+          }
+        ]
+      }
+    ];
   };
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       const username = localStorage.getItem("user_name") || "guest";
-      setChatMessages(getInitialMessages(username));
+      const initialSessions = getInitialSessions(username);
+      setSessions(initialSessions);
+      setActiveSessionId(initialSessions[0].id);
       lastUserRef.current = username;
     }
   }, []);
@@ -61,18 +77,94 @@ export default function FloatingChat() {
     if (typeof window !== "undefined") {
       const username = localStorage.getItem("user_name") || "guest";
       if (username !== lastUserRef.current) {
-        setChatMessages(getInitialMessages(username));
+        const initialSessions = getInitialSessions(username);
+        setSessions(initialSessions);
+        setActiveSessionId(initialSessions[0].id);
         lastUserRef.current = username;
+        setChatCatId(""); // Reset cat select on session switch
+        setShowHistoryMenu(false);
       }
     }
   }, [pathname]);
 
   useEffect(() => {
-    if (typeof window !== "undefined" && chatMessages.length > 0) {
+    if (typeof window !== "undefined" && sessions.length > 0) {
       const username = localStorage.getItem("user_name") || "guest";
-      localStorage.setItem(`chat_history_${username}`, JSON.stringify(chatMessages));
+      localStorage.setItem(`chat_sessions_${username}`, JSON.stringify(sessions));
     }
-  }, [chatMessages]);
+  }, [sessions]);
+
+  const activeSession = sessions.find((s: any) => s.id === activeSessionId) || sessions[0];
+  const chatMessages: any[] = activeSession ? activeSession.messages : [];
+
+  const setChatMessages = (updater: any[] | ((prev: any[]) => any[])) => {
+    setSessions((prevSessions) => {
+      const targetId = activeSessionId || (prevSessions[0] ? prevSessions[0].id : "");
+      return prevSessions.map((session) => {
+        if (session.id === targetId) {
+          const newMessages = typeof updater === "function" ? updater(session.messages) : updater;
+          
+          let newTitle = session.title;
+          if (session.title === "Default Conversation" || session.title === "New Chat") {
+            const firstUserMsg = newMessages.find((m: any) => m.sender === "user");
+            if (firstUserMsg) {
+              const text = firstUserMsg.text;
+              newTitle = text.length > 25 ? text.substring(0, 25) + "..." : text;
+            }
+          }
+
+          return {
+            ...session,
+            title: newTitle,
+            messages: newMessages
+          };
+        }
+        return session;
+      });
+    });
+  };
+
+  const handleNewChat = () => {
+    const username = localStorage.getItem("user_name") || "guest";
+    const newSessionId = "session_" + Date.now();
+    const newSession = {
+      id: newSessionId,
+      title: "New Chat",
+      messages: [
+        {
+          sender: "ai",
+          text: `Hello${username !== "guest" ? " " + username : ""}! I am your Kizuna AI Behavior Advisor. Ask me anything about general cat behavior, play schedules, or shyness traits!`
+        }
+      ]
+    };
+    setSessions((prev) => [newSession, ...prev]);
+    setActiveSessionId(newSessionId);
+    setChatCatId("");
+    setShowHistoryMenu(false);
+  };
+
+  const handleDeleteSession = (sessionId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSessions((prev) => {
+      const filtered = prev.filter((s) => s.id !== sessionId);
+      if (filtered.length === 0) {
+        const username = localStorage.getItem("user_name") || "guest";
+        const initial = getInitialSessions(username);
+        setActiveSessionId(initial[0].id);
+        return initial;
+      }
+      return filtered;
+    });
+
+    if (activeSessionId === sessionId) {
+      setSessions((prev) => {
+        if (prev.length > 0) {
+          setActiveSessionId(prev[0].id);
+        }
+        return prev;
+      });
+    }
+  };
 
   // Stop speech synthesis on unmount
   useEffect(() => {
@@ -116,7 +208,7 @@ export default function FloatingChat() {
       displayMsg += ` 📸 [File: ${chatFile.name}]`;
     }
 
-    setChatMessages((prev) => [...prev, { sender: "user", text: displayMsg }]);
+    setChatMessages((prev: any[]) => [...prev, { sender: "user", text: displayMsg }]);
     setChatInput("");
     const fileToUpload = chatFile;
     setChatFile(null);
@@ -125,7 +217,7 @@ export default function FloatingChat() {
     try {
       // Pass the name context of the featured cat to the backend query
       const response = await sendChatQuery(chatCatId || null, userMsg, fileToUpload);
-      setChatMessages((prev) => {
+      setChatMessages((prev: any[]) => {
         const nextMsgs = [...prev, { sender: "ai", text: response.reply }];
         setTimeout(() => {
           handleSpeak(response.reply, nextMsgs.length - 1);
@@ -133,7 +225,7 @@ export default function FloatingChat() {
         return nextMsgs;
       });
     } catch (err: any) {
-      setChatMessages((prev) => [...prev, { sender: "ai", text: `Sorry, I encountered an error: ${err.message}` }]);
+      setChatMessages((prev: any[]) => [...prev, { sender: "ai", text: `Sorry, I encountered an error: ${err.message}` }]);
     } finally {
       setChatLoading(false);
     }
@@ -323,6 +415,20 @@ export default function FloatingChat() {
             </div>
             
             <div className="flex items-center space-x-1.5" onClick={(e) => e.stopPropagation()}>
+              {/* History menu toggle */}
+              {!isMinimized && (
+                <button
+                  type="button"
+                  onClick={() => setShowHistoryMenu(!showHistoryMenu)}
+                  className={`p-1 rounded-full hover:text-white hover:bg-white/10 transition-colors cursor-pointer ${
+                    showHistoryMenu ? "text-white bg-white/10" : "text-red-100"
+                  }`}
+                  title="Chat History"
+                >
+                  <Menu className="h-3.5 w-3.5" />
+                </button>
+              )}
+
               {/* Minimize/Restore Toggle Button */}
               <button
                 type="button"
@@ -366,7 +472,63 @@ export default function FloatingChat() {
 
           {/* Hidden layout elements when minimized */}
           {!isMinimized && (
-            <>
+            <div className="flex-1 flex flex-col relative overflow-hidden">
+              {/* History Sliding Panel */}
+              {showHistoryMenu && (
+                <div className="absolute inset-y-0 left-0 w-full bg-neutral-950/98 z-40 flex flex-col p-4 border-r border-neutral-900 backdrop-blur-md transition-all duration-300">
+                  <div className="flex items-center justify-between pb-3 border-b border-neutral-900 mb-3">
+                    <span className="text-xs font-bold text-neutral-200">Past Conversations</span>
+                    <button
+                      type="button"
+                      onClick={() => setShowHistoryMenu(false)}
+                      className="p-1 rounded text-neutral-400 hover:text-white hover:bg-neutral-900 transition-all cursor-pointer"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+
+                  {/* New Chat Button */}
+                  <button
+                    type="button"
+                    onClick={handleNewChat}
+                    className="w-full py-2 px-3 mb-4 rounded-lg bg-red-650/10 border border-red-500/30 text-red-400 hover:bg-red-650 hover:text-white transition-all text-xs font-semibold flex items-center justify-center cursor-pointer shadow-md shadow-red-950/10 animate-fade-in"
+                  >
+                    <Plus className="h-3.5 w-3.5 mr-1.5" />
+                    New Conversation
+                  </button>
+
+                  {/* Session List */}
+                  <div className="flex-1 overflow-y-auto space-y-1.5 scrollbar-thin pr-1">
+                    {sessions.map((session) => (
+                      <div
+                        key={session.id}
+                        onClick={() => {
+                          setActiveSessionId(session.id);
+                          setShowHistoryMenu(false);
+                        }}
+                        className={`group p-2.5 rounded-lg border text-[11px] cursor-pointer flex items-center justify-between transition-all ${
+                          session.id === activeSessionId
+                            ? "bg-red-950/20 border-red-500/40 text-red-400 font-semibold"
+                            : "bg-neutral-900/40 border-neutral-850 text-neutral-400 hover:bg-neutral-900 hover:text-neutral-200 hover:border-neutral-800"
+                        }`}
+                      >
+                        <span className="truncate max-w-[80%] pr-2">
+                          {session.title || "Untitled Chat"}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={(e) => handleDeleteSession(session.id, e)}
+                          className="opacity-0 group-hover:opacity-100 p-1 rounded text-neutral-500 hover:text-red-400 hover:bg-neutral-950 transition-all cursor-pointer animate-fade-in"
+                          title="Delete conversation"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Selector Dropdown */}
               <div className="px-4 py-2 border-b border-neutral-900 bg-neutral-900/40">
                 <select
@@ -401,7 +563,7 @@ export default function FloatingChat() {
                   isMaximized ? "flex-grow h-auto" : "h-64"
                 }`}
               >
-                {chatMessages.map((msg, idx) => (
+                {chatMessages.map((msg: any, idx: number) => (
                   <div
                     key={idx}
                     className={`relative max-w-[85%] rounded-xl px-3 py-2.5 text-xs leading-relaxed group transition-all ${
@@ -591,7 +753,7 @@ export default function FloatingChat() {
                   <Send className="h-3.5 w-3.5" />
                 </button>
               </form>
-            </>
+            </div>
           )}
         </div>
       )}
