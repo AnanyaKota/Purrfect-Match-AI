@@ -2,19 +2,21 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Sparkles, Cat, X, Send, Paperclip, Camera, Minus, Maximize2, Minimize2, Copy, Check, Share2, Mic, MicOff, Volume2, VolumeX, Play, Pause } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { sendChatQuery } from "@/lib/api";
 import CameraCaptureModal from "./CameraCaptureModal";
 
 export default function FloatingChat() {
+  const pathname = usePathname();
+  const lastUserRef = useRef<string | null>(null);
+
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [isMaximized, setIsMaximized] = useState(false);
   const [chatCatId, setChatCatId] = useState("");
   const [chatInput, setChatInput] = useState("");
   const [chatFile, setChatFile] = useState<File | null>(null);
-  const [chatMessages, setChatMessages] = useState<any[]>([
-    { sender: "ai", text: "Hello! I am your Kizuna AI Behavior Advisor. Ask me anything about general cat behavior, play schedules, or shyness traits!" }
-  ]);
+  const [chatMessages, setChatMessages] = useState<any[]>([]);
   const [chatLoading, setChatLoading] = useState(false);
   const [showPrompt, setShowPrompt] = useState(true);
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
@@ -27,6 +29,50 @@ export default function FloatingChat() {
   
   const scrollRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
+
+  const getInitialMessages = (username: string) => {
+    const defaultMsg = {
+      sender: "ai",
+      text: `Hello${username !== "guest" ? " " + username : ""}! I am your Kizuna AI Behavior Advisor. Ask me anything about general cat behavior, play schedules, or shyness traits!`
+    };
+
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem(`chat_history_${username}`);
+      if (stored) {
+        try {
+          return JSON.parse(stored);
+        } catch (e) {
+          console.error("Failed to parse chat history", e);
+        }
+      }
+    }
+    return [defaultMsg];
+  };
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const username = localStorage.getItem("user_name") || "guest";
+      setChatMessages(getInitialMessages(username));
+      lastUserRef.current = username;
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const username = localStorage.getItem("user_name") || "guest";
+      if (username !== lastUserRef.current) {
+        setChatMessages(getInitialMessages(username));
+        lastUserRef.current = username;
+      }
+    }
+  }, [pathname]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && chatMessages.length > 0) {
+      const username = localStorage.getItem("user_name") || "guest";
+      localStorage.setItem(`chat_history_${username}`, JSON.stringify(chatMessages));
+    }
+  }, [chatMessages]);
 
   // Stop speech synthesis on unmount
   useEffect(() => {
