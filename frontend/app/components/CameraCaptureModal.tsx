@@ -23,6 +23,10 @@ export default function CameraCaptureModal({ isOpen, onClose, onCapture }: Camer
 
     // Request camera permission and start video stream
     navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+      .catch((err) => {
+        console.warn("Environment camera not found, falling back to default webcam:", err);
+        return navigator.mediaDevices.getUserMedia({ video: true });
+      })
       .then((stream) => {
         streamRef.current = stream;
         if (videoRef.current) {

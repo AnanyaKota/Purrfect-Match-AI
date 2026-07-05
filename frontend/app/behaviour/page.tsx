@@ -9,6 +9,7 @@ import CameraCaptureModal from "../components/CameraCaptureModal";
 export default function BehaviourAnalysisHub() {
   const [catName, setCatName] = useState("");
   const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [uploadSource, setUploadSource] = useState<"library" | "camera" | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<any>(null);
   const [scanMessage, setScanMessage] = useState("Extracting media keyframes...");
@@ -85,6 +86,7 @@ export default function BehaviourAnalysisHub() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       setUploadFile(e.target.files[0]);
+      setUploadSource("library");
       setAnalysisResult(null);
     }
   };
@@ -179,7 +181,7 @@ export default function BehaviourAnalysisHub() {
                   <div className="space-y-1.5">
                     <Video className="h-6 w-6 text-neutral-500 mx-auto" />
                     <p className="text-xs text-neutral-400 font-semibold">
-                      {uploadFile ? uploadFile.name : "Choose File"}
+                      {uploadFile && uploadSource === "library" ? uploadFile.name : "Choose File"}
                     </p>
                     <p className="text-[8px] text-neutral-500">From library</p>
                   </div>
@@ -194,7 +196,7 @@ export default function BehaviourAnalysisHub() {
                   <div className="space-y-1.5">
                     <Camera className="h-6 w-6 text-neutral-500 mx-auto" />
                     <p className="text-xs text-neutral-400 font-semibold">
-                      {uploadFile ? uploadFile.name : "Use Camera"}
+                      {uploadFile && uploadSource === "camera" ? uploadFile.name : "Use Camera"}
                     </p>
                     <p className="text-[8px] text-neutral-500">Take Photo/Video</p>
                   </div>
@@ -361,6 +363,7 @@ export default function BehaviourAnalysisHub() {
         onClose={() => setIsCameraOpen(false)}
         onCapture={(file) => {
           setUploadFile(file);
+          setUploadSource("camera");
           setAnalysisResult(null);
         }}
       />
