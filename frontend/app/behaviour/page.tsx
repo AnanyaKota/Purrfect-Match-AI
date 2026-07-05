@@ -46,11 +46,18 @@ export default function BehaviourAnalysisHub() {
     utteranceRef.current = utterance;
 
     utterance.onend = () => {
-      setIsSpeaking(false);
+      if (utteranceRef.current === utterance) {
+        setIsSpeaking(false);
+      }
     };
 
-    utterance.onerror = () => {
-      setIsSpeaking(false);
+    utterance.onerror = (event) => {
+      if (event.error !== "interrupted") {
+        console.error("SpeechSynthesis error:", event);
+      }
+      if (utteranceRef.current === utterance) {
+        setIsSpeaking(false);
+      }
     };
 
     setIsSpeaking(true);

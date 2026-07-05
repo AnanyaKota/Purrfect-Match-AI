@@ -113,11 +113,18 @@ export default function FloatingChat() {
     utteranceRef.current = utterance;
 
     utterance.onend = () => {
-      setSpeakingMsgIdx(null);
+      if (utteranceRef.current === utterance) {
+        setSpeakingMsgIdx(null);
+      }
     };
 
-    utterance.onerror = () => {
-      setSpeakingMsgIdx(null);
+    utterance.onerror = (event) => {
+      if (event.error !== "interrupted") {
+        console.error("SpeechSynthesis error:", event);
+      }
+      if (utteranceRef.current === utterance) {
+        setSpeakingMsgIdx(null);
+      }
     };
 
     setSpeakingMsgIdx(idx);
