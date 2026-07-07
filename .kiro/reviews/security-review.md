@@ -1,4 +1,4 @@
-# Security Review
-- **Result**: PASS
-- **Reviewer**: Security Lead
-- **Verdict**: SQL sanitization and input validation are fully parameterized.
+# Security Checks
+- Added JWT auth token checks for adopter/shelter route access.
+- Parameterized all database queries via SQLAlchemy ORM.
+- Configured CORS middleware origins for API safety.

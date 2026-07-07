@@ -1,3 +1,3 @@
-# Code Review
-- **Result**: PASS
-- **Verdict**: Clean naming patterns, zero duplicate logic, robust try-except guards.
+# Code Review Feedback
+- Nakka: Tested the backend API endpoints locally, everything resolves successfully.
+- Ananya: Added type annotations in the frontend routing, builds pass without TypeScript failures.

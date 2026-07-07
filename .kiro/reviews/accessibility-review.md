@@ -1,3 +1,4 @@
-# Accessibility Review
-- **Result**: PASS
-- **Verdict**: Elements include ARIA labels, semantic headers, and keyboard access routes.
+# Accessibility Checks
+- Checked form labels and inputs to ensure screen reader compatibility.
+- Set high-contrast text styles for dark and light theme toggles.
+- Added descriptive image alt tags.
