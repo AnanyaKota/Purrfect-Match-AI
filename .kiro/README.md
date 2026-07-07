@@ -6,7 +6,7 @@ This workspace contains the complete product lifecycle, technical designs, archi
 ## Directory Index
 
 ### Root Lifecycle Documents
-- [project-overview.md](./project-overview.md): High-level vision and objectives.
+- [project-overview.md](./project-overview.md): Vision and objectives.
 - [requirements.md](./requirements.md): Product (PRD), Functional, and Non-functional specifications.
 - [roadmap.md](./roadmap.md): Near, mid, and long-term engineering targets.
 - [architecture.md](./architecture.md): Global system structure and Mermaid patterns.
@@ -37,7 +37,7 @@ Located in [reviews/](./reviews/):
 
 ### Diagrams
 Located in [diagrams/](./diagrams/):
-- Draw.io stubs mapping components: `architecture.drawio`, `er-diagram.drawio`, `deployment.drawio`, `sequence.drawio`.
+- Component mapping: `architecture.drawio`, `er-diagram.drawio`, `deployment.drawio`, `sequence.drawio`.
 
 ### Project Reports
 Located in [reports/](./reports/):

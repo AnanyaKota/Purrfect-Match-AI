@@ -5,9 +5,10 @@
 - Auto-migrations and seeding.
 - Questionnaire scoring algorithms.
 
-## Phase 2: Staging Deployments (Near Term)
+## Phase 2: Staging Deployments (Completed)
 - Set up Supabase production database instance.
-- Integrate Cloudinary storage APIs.
+- Configure SMTP Gmail verified alerts.
+- Live Vercel & Render hosting setup.
 
 ## Phase 3: Advanced AI (Long Term)
 - Implement real-time WebRTC camera streams in shelters.
